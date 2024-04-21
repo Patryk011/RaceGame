@@ -1,0 +1,64 @@
+body,
+html {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+}
+
+#game-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+#ui-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+input,
+button {
+  margin: 10px;
+  padding: 10px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.hidden {
+  display: none;
+}
+
+#scoreboard {
+  border: 1px solid #888;
+  padding: 10px;
+}
+
+#scoreboard h2 {
+  margin-top: 0;
+}
+
+table {
+  width: 100%;
+  margin-top: 10px;
+  border-collapse: collapse;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+}
+
+th,
+td {
+  padding: 8px;
+  text-align: left;
+}
