@@ -4,8 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Race Game</title>
+    <link rel="stylesheet" href="css/style.css" />
   </head>
-  <body></body>
-
-  <script type="module" src="js/main.js"></script>
+  <body>
+    <div id="game-container">
+      <div id="ui-container">
+        <input type="text" id="nickname" placeholder="Enter your nickname" />
+        <button id="play-button">Play</button>
+        <button id="score-button">Scores</button>
+      </div>
+      <div id="scoreboard" class="hidden">
+        <h2>Scoreboard:</h2>
+        <table></table>
+        <button id="hide-score-button">Hide Scores</button>
+      </div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+  </body>
 </html>
