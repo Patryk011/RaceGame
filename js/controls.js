@@ -2,9 +2,9 @@ import * as THREE from "three";
 import { scene, camera, renderer } from "./sceneSetup";
 import { keyboard } from "./keyboard";
 
-const leftBoundary = -200;
-const rightBoundary = 200;
-const finishLineDistance = -10000;
+const leftBoundary = -250;
+const rightBoundary = 250;
+const finishLineDistance = -15000;
 const maxTiltAngle = THREE.MathUtils.degToRad(10);
 let gameRunning = true;
 
@@ -21,14 +21,14 @@ scene.add(cube);
 const clock = new THREE.Clock();
 
 export function setupControls() {
-  addBoundaryLines();
-
+  addBoundaryStripes();
+  addMiddleLines();
   animate();
 }
 
 function updateMovement() {
   const delta = clock.getDelta();
-  const moveDistance = 150 * delta;
+  const moveDistance = 200 * delta;
 
   cube.position.z -= moveDistance;
 
@@ -85,44 +85,51 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-function addBoundaryLines() {
-  const boundaryMaterial = new THREE.LineDashedMaterial({
-    color: 0x0000ff,
-    dashSize: 3,
-    gapSize: 1,
-    scale: 1,
-  });
+function addBoundaryStripes() {
+  const segmentLength = 100;
+  const stripeWidth = 35;
+  const totalLength = Math.abs(finishLineDistance);
 
-  const middleLineMaterial = new THREE.LineDashedMaterial({
-    color: 0xffffff,
-    dashSize: 10,
-    gapSize: 10,
-  });
+  function addStripesForSide(side) {
+    let currentZ = 0;
+    while (currentZ < totalLength) {
+      const whiteGeometry = new THREE.PlaneGeometry(stripeWidth, segmentLength);
+      const whiteMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const whiteStripe = new THREE.Mesh(whiteGeometry, whiteMaterial);
+      whiteStripe.position.set(side, 0.1, -currentZ);
+      whiteStripe.rotateX(-Math.PI / 2);
+      scene.add(whiteStripe);
 
-  const pointsLeft = [];
-  pointsLeft.push(new THREE.Vector3(leftBoundary, 0.1, 0));
-  pointsLeft.push(new THREE.Vector3(leftBoundary, 0.1, finishLineDistance));
+      currentZ += segmentLength;
 
-  const geometryLeft = new THREE.BufferGeometry().setFromPoints(pointsLeft);
-  const lineLeft = new THREE.LineSegments(geometryLeft, boundaryMaterial);
-  lineLeft.computeLineDistances();
-  scene.add(lineLeft);
+      const redGeometry = new THREE.PlaneGeometry(stripeWidth, segmentLength);
+      const redMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+      const redStripe = new THREE.Mesh(redGeometry, redMaterial);
+      redStripe.position.set(side, 0.1, -currentZ);
+      redStripe.rotateX(-Math.PI / 2);
+      scene.add(redStripe);
 
-  const pointsRight = [];
-  pointsRight.push(new THREE.Vector3(rightBoundary, 0.1, 0));
-  pointsRight.push(new THREE.Vector3(rightBoundary, 0.1, finishLineDistance));
+      currentZ += segmentLength;
+    }
+  }
 
-  const geometryRight = new THREE.BufferGeometry().setFromPoints(pointsRight);
-  const lineRight = new THREE.LineSegments(geometryRight, boundaryMaterial);
-  lineRight.computeLineDistances();
-  scene.add(lineRight);
+  addStripesForSide(leftBoundary + stripeWidth / 2);
+  addStripesForSide(rightBoundary - stripeWidth / 2);
+}
 
-  const middlePoints = [];
-  middlePoints.push(new THREE.Vector3(0, 0.1, 0));
-  middlePoints.push(new THREE.Vector3(0, 0.1, finishLineDistance));
+function addMiddleLines() {
+  const dashLength = 40;
+  const gapLength = 30;
+  const lineThickness = 4;
+  const lineColor = 0xffffff;
+  const totalLength = Math.abs(finishLineDistance);
 
-  const middleGeometry = new THREE.BufferGeometry().setFromPoints(middlePoints);
-  const middleLine = new THREE.Line(middleGeometry, middleLineMaterial);
-  middleLine.computeLineDistances();
-  scene.add(middleLine);
+  for (let z = 0; z < totalLength; z += dashLength + gapLength) {
+    const dashGeometry = new THREE.PlaneGeometry(lineThickness, dashLength);
+    dashGeometry.rotateX(-Math.PI / 2);
+    const dashMaterial = new THREE.MeshBasicMaterial({ color: lineColor });
+    const dash = new THREE.Mesh(dashGeometry, dashMaterial);
+    dash.position.set(0, 0.1, -z - dashLength / 2);
+    scene.add(dash);
+  }
 }

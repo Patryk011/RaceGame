@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { scene } from "./sceneSetup.js";
 
-const leftBoundary = -600;
-const rightBoundary = 600;
+const leftBoundary = -250;
+const rightBoundary = 250;
 
 function createTree(x, z) {
   const trunkGeometry = new THREE.CylinderGeometry(5, 5, 20, 32);
@@ -18,43 +18,58 @@ function createTree(x, z) {
   scene.add(foliage);
 }
 
-export function createTerrain() {
-  const insideMaterial = new THREE.MeshBasicMaterial({ color: 0x676767 });
+const treeBoundary = 600;
+const numberOfTrees = 100;
+for (let i = 0; i < numberOfTrees; i++) {
+  const x = THREE.MathUtils.randFloatSpread(treeBoundary);
+  const z = THREE.MathUtils.randFloatSpread(30000);
+  if (Math.abs(x) > 400) {
+    createTree(x, z);
+  }
+}
 
-  const insideGeometry = new THREE.PlaneGeometry(400, 20000);
+export function createTerrain() {
+  const loader = new THREE.TextureLoader();
+
+  const asphaltTexture = loader.load("assets/textures/asphalt.jpg");
+  asphaltTexture.wrapS = asphaltTexture.wrapT = THREE.RepeatWrapping;
+  asphaltTexture.repeat.set(1, 20);
+
+  const insideMaterial = new THREE.MeshBasicMaterial({ map: asphaltTexture });
+
+  const insideGeometry = new THREE.PlaneGeometry(
+    rightBoundary - leftBoundary,
+    30000
+  );
   insideGeometry.rotateX(-Math.PI / 2);
 
   const insideGround = new THREE.Mesh(insideGeometry, insideMaterial);
   insideGround.position.y = -0.5;
   scene.add(insideGround);
 
-  const outsideMaterial = new THREE.MeshBasicMaterial({ color: 0x008000 });
+  const grassTexture = loader.load("assets/textures/grass.jpg");
+  grassTexture.wrapS = grassTexture.wrapT = THREE.RepeatWrapping;
+  grassTexture.repeat.set(50, 50);
 
-  const outsideLeftGeometry = new THREE.PlaneGeometry(20000, 20000);
+  const outsideMaterial = new THREE.MeshBasicMaterial({ map: grassTexture });
+
+  const outsideLeftGeometry = new THREE.PlaneGeometry(10000, 30000);
   outsideLeftGeometry.rotateX(-Math.PI / 2);
   const outsideLeftGround = new THREE.Mesh(
     outsideLeftGeometry,
     outsideMaterial
   );
   outsideLeftGround.position.y = -0.5;
-  outsideLeftGround.position.x = -10000 + leftBoundary / 2;
+  outsideLeftGround.position.x = leftBoundary - 5000;
   scene.add(outsideLeftGround);
 
-  const outsideRightGeometry = new THREE.PlaneGeometry(20000, 20000);
+  const outsideRightGeometry = new THREE.PlaneGeometry(10000, 30000);
   outsideRightGeometry.rotateX(-Math.PI / 2);
   const outsideRightGround = new THREE.Mesh(
     outsideRightGeometry,
     outsideMaterial
   );
   outsideRightGround.position.y = -0.5;
-  outsideRightGround.position.x = 10000 + rightBoundary / 2;
+  outsideRightGround.position.x = rightBoundary + 5000;
   scene.add(outsideRightGround);
-
-  for (let i = 0; i < 50; i++) {
-    const x = THREE.MathUtils.randFloatSpread(2000);
-    const z = THREE.MathUtils.randFloatSpread(20000);
-    if (Math.abs(x) > 400) {
-      createTree(x, z);
-    }
-  }
 }
