@@ -93,6 +93,12 @@ function addBoundaryLines() {
     scale: 1,
   });
 
+  const middleLineMaterial = new THREE.LineDashedMaterial({
+    color: 0xffffff,
+    dashSize: 10,
+    gapSize: 10,
+  });
+
   const pointsLeft = [];
   pointsLeft.push(new THREE.Vector3(leftBoundary, 0.1, 0));
   pointsLeft.push(new THREE.Vector3(leftBoundary, 0.1, finishLineDistance));
@@ -110,4 +116,13 @@ function addBoundaryLines() {
   const lineRight = new THREE.LineSegments(geometryRight, boundaryMaterial);
   lineRight.computeLineDistances();
   scene.add(lineRight);
+
+  const middlePoints = [];
+  middlePoints.push(new THREE.Vector3(0, 0.1, 0));
+  middlePoints.push(new THREE.Vector3(0, 0.1, finishLineDistance));
+
+  const middleGeometry = new THREE.BufferGeometry().setFromPoints(middlePoints);
+  const middleLine = new THREE.Line(middleGeometry, middleLineMaterial);
+  middleLine.computeLineDistances();
+  scene.add(middleLine);
 }
