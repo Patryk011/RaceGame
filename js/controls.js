@@ -1,22 +1,36 @@
 import * as THREE from "three";
 import { scene, camera, renderer } from "./sceneSetup";
 import { keyboard } from "./keyboard";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 const leftBoundary = -250;
 const rightBoundary = 250;
 const finishLineDistance = -15000;
-const maxTiltAngle = THREE.MathUtils.degToRad(10);
+// const maxTiltAngle = THREE.MathUtils.degToRad(10);
 let gameRunning = true;
 
-const cubeGeometry = new THREE.BoxGeometry(50, 25, 60);
-const cubeMaterial = new THREE.MeshBasicMaterial({
-  color: 0x00ff00,
-  wireframe: true,
-});
-const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-cube.position.set(0, 25, -20);
+const loader = new GLTFLoader();
+let car;
 
-scene.add(cube);
+function loadCarModel() {
+  loader.load(
+    "assets/car/scene.gltf",
+    function (gltf) {
+      car = gltf.scene;
+      car.scale.set(40, 40, 40);
+      car.position.set(0, 7, 0);
+      car.rotation.y = 7.85;
+
+      scene.add(car);
+    },
+    undefined,
+    function (error) {
+      console.error("An error happened while loading the car model:", error);
+    }
+  );
+}
+
+loadCarModel();
 
 const clock = new THREE.Clock();
 
@@ -27,42 +41,38 @@ export function setupControls() {
 }
 
 function updateMovement() {
+  if (!car) return;
+
+  const targetRotationY = Math.PI;
+
   const delta = clock.getDelta();
   const moveDistance = 200 * delta;
 
-  cube.position.z -= moveDistance;
+  car.position.z -= moveDistance;
 
   if (keyboard.pressed("arrowup") || keyboard.pressed("w")) {
-    cube.position.z -= moveDistance;
+    car.position.z -= moveDistance;
   }
   if (keyboard.pressed("arrowdown") || keyboard.pressed("s")) {
-    cube.position.z += moveDistance;
+    car.position.z += moveDistance;
   }
 
   if (keyboard.pressed("arrowleft") || keyboard.pressed("a")) {
-    cube.position.x = Math.max(cube.position.x - moveDistance, leftBoundary);
-    cube.rotation.z = Math.min(cube.rotation.z + delta, maxTiltAngle);
+    car.position.x = Math.max(car.position.x - moveDistance, leftBoundary);
   } else if (keyboard.pressed("arrowright") || keyboard.pressed("d")) {
-    cube.position.x = Math.min(cube.position.x + moveDistance, rightBoundary);
-    cube.rotation.z = Math.max(cube.rotation.z - delta, -maxTiltAngle);
-  } else {
-    if (cube.rotation.z < 0) {
-      cube.rotation.z = Math.min(cube.rotation.z + delta, 0);
-    } else if (cube.rotation.z > 0) {
-      cube.rotation.z = Math.max(cube.rotation.z - delta, 0);
-    }
+    car.position.x = Math.min(car.position.x + moveDistance, rightBoundary);
   }
 
   camera.position.set(
-    cube.position.x,
-    cube.position.y + 100,
-    cube.position.z + 300
+    car.position.x,
+    car.position.y + 100,
+    car.position.z + 300
   );
-  camera.lookAt(cube.position.x, cube.position.y, cube.position.z - 100);
+  camera.lookAt(car.position.x, car.position.y, car.position.z - 100);
 
   window.addEventListener("resize", onWindowResize, false);
 
-  if (cube.position.z <= finishLineDistance) {
+  if (car.position.z <= finishLineDistance) {
     stopGame();
   }
 }
