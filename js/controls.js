@@ -5,9 +5,10 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 const leftBoundary = -250;
 const rightBoundary = 250;
-const finishLineDistance = -15000;
+const finishLineDistance = -17500;
 // const maxTiltAngle = THREE.MathUtils.degToRad(10);
 let gameRunning = true;
+let score = 0;
 
 const loader = new GLTFLoader();
 let car;
@@ -17,7 +18,7 @@ function loadCarModel() {
     "assets/car/scene.gltf",
     function (gltf) {
       car = gltf.scene;
-      car.scale.set(40, 40, 40);
+      car.scale.set(45, 45, 45);
       car.position.set(0, 7, 0);
       car.rotation.y = 7.85;
 
@@ -28,6 +29,11 @@ function loadCarModel() {
       console.error("An error happened while loading the car model:", error);
     }
   );
+}
+
+export function updateScoreDisplay() {
+  const scoreElement = document.getElementById("score-display");
+  scoreElement.textContent = `Score: ${Math.round(score)}`;
 }
 
 loadCarModel();
@@ -49,6 +55,10 @@ function updateMovement() {
   const moveDistance = 200 * delta;
 
   car.position.z -= moveDistance;
+
+  score += moveDistance;
+
+  updateScoreDisplay();
 
   if (keyboard.pressed("arrowup") || keyboard.pressed("w")) {
     car.position.z -= moveDistance;

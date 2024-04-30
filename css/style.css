@@ -62,3 +62,15 @@ td {
   padding: 8px;
   text-align: left;
 }
+
+#score-display {
+  position: absolute;
+  top: 20px;
+  right: 50px;
+  font-size: 32px;
+  color: white;
+  font-family: sans-serif;
+  font-weight: bold;
+  z-index: 10;
+  /* display: none; */
+}

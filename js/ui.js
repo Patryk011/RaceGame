@@ -29,6 +29,7 @@ function displayScores() {
 
 function hideUI() {
   const uiContainer = document.getElementById("ui-container");
+
   uiContainer.style.display = "none";
 }
 

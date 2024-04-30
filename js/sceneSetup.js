@@ -4,7 +4,7 @@ import { Sky } from "three/examples/jsm/Addons.js";
 export const scene = new THREE.Scene();
 
 let sky = new Sky();
-sky.scale.setScalar(30000);
+sky.scale.setScalar(35000);
 scene.add(sky);
 
 let sun = new THREE.Vector3();

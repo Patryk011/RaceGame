@@ -39,7 +39,7 @@ function createTree(x, z) {
 
 for (let i = 0; i < numberOfTrees; i++) {
   let x,
-    z = THREE.MathUtils.randFloatSpread(30000);
+    z = THREE.MathUtils.randFloatSpread(35000);
 
   if (Math.random() < 0.5) {
     x = THREE.MathUtils.randFloat(leftTreeZoneStart, leftTreeZoneEnd);
@@ -60,7 +60,7 @@ export function createTerrain() {
 
   const insideGeometry = new THREE.PlaneGeometry(
     rightBoundary - leftBoundary,
-    30000
+    35000
   );
   insideGeometry.rotateX(-Math.PI / 2);
 
@@ -74,7 +74,7 @@ export function createTerrain() {
 
   const outsideMaterial = new THREE.MeshBasicMaterial({ map: grassTexture });
 
-  const outsideLeftGeometry = new THREE.PlaneGeometry(10000, 30000);
+  const outsideLeftGeometry = new THREE.PlaneGeometry(10000, 35000);
   outsideLeftGeometry.rotateX(-Math.PI / 2);
   const outsideLeftGround = new THREE.Mesh(
     outsideLeftGeometry,
@@ -84,7 +84,7 @@ export function createTerrain() {
   outsideLeftGround.position.x = leftBoundary - 5000;
   scene.add(outsideLeftGround);
 
-  const outsideRightGeometry = new THREE.PlaneGeometry(10000, 30000);
+  const outsideRightGeometry = new THREE.PlaneGeometry(10000, 35000);
   outsideRightGeometry.rotateX(-Math.PI / 2);
   const outsideRightGround = new THREE.Mesh(
     outsideRightGeometry,
