@@ -1,9 +1,12 @@
-// main.js
 import * as THREE from "three";
 import { scene, setupScene, camera, renderer } from "./sceneSetup.js";
 import { createTerrain } from "./terrain.js";
 import { setupLights } from "./lighting.js";
-import { setupControls } from "./controls.js";
+import {
+  setupControls,
+  resetGameEnvironment,
+  startGameControls,
+} from "./controls.js";
 import { setupUI } from "./ui.js";
 
 export let players = [];
@@ -28,7 +31,7 @@ export function startNextPlayer() {
     !players[currentPlayerIndex].finished
   ) {
     const playerName = players[currentPlayerIndex].name;
-    console.log(`Starting game for ${playerName}`);
+
     startGame(playerName);
   } else {
     console.log("All players have played or game queue is complete.");
@@ -37,6 +40,8 @@ export function startNextPlayer() {
 
 export function startGame(nickname) {
   console.log(`Starting game for ${nickname}`);
+  resetGameEnvironment();
+  startGameControls();
   document.body.appendChild(renderer.domElement);
   createTerrain();
   setupLights();

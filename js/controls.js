@@ -47,6 +47,11 @@ export function setupControls() {
   animate();
 }
 
+export function startGameControls() {
+  gameRunning = true;
+  animate();
+}
+
 function updateMovement() {
   if (!car) return;
 
@@ -99,6 +104,14 @@ function animate() {
 function stopGame() {
   gameRunning = false;
   gameFinished();
+}
+
+export function resetGameEnvironment() {
+  score = 0;
+  if (car) {
+    car.position.set(0, 7, 0);
+  }
+  updateScoreDisplay();
 }
 
 function onWindowResize() {
