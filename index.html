@@ -10,7 +10,19 @@
     <div id="game-container">
       <div id="score-display"></div>
       <div id="ui-container">
-        <input type="text" id="nickname" placeholder="Enter your nickname" />
+        <input
+          type="number"
+          id="player-count"
+          placeholder="Number of players"
+        />
+        <button id="set-players-button">Set Players</button>
+        <input
+          type="text"
+          id="nickname"
+          placeholder="Enter player nickname"
+          class="hidden"
+        />
+        <button id="add-player-button" class="hidden">Add Player</button>
         <button id="play-button">Play</button>
         <button id="score-button">Scores</button>
       </div>

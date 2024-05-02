@@ -1,44 +1,51 @@
-import { startGame } from "./main.js";
+import { registerPlayer, startNextPlayer } from "./main.js";
 
 export function setupUI() {
+  const setPlayersButton = document.getElementById("set-players-button");
+  const addPlayerButton = document.getElementById("add-player-button");
   const playButton = document.getElementById("play-button");
-  const scoreButton = document.getElementById("score-button");
   const nicknameInput = document.getElementById("nickname");
-  const hideScoresBtn = document.getElementById("hide-score-button");
+  const playerCountInput = document.getElementById("player-count");
 
-  playButton.addEventListener("click", () => {
+  let totalPlayers = 0;
+  let currentPlayerCount = 0;
+
+  setPlayersButton.addEventListener("click", () => {
+    totalPlayers = parseInt(playerCountInput.value);
+    if (isNaN(totalPlayers) || totalPlayers < 1) {
+      alert("Please enter a valid number of players.");
+      return;
+    }
+    nicknameInput.classList.remove("hidden");
+    addPlayerButton.classList.remove("hidden");
+    setPlayersButton.classList.add("hidden");
+    playerCountInput.classList.add("hidden");
+  });
+
+  addPlayerButton.addEventListener("click", () => {
     const nickname = nicknameInput.value.trim();
     if (!nickname) {
       alert("Please enter a nickname.");
       return;
     }
-    startGame(nickname);
-    hideUI();
+    registerPlayer(nickname, totalPlayers);
+    currentPlayerCount++;
+    nicknameInput.value = "";
+    if (currentPlayerCount === totalPlayers) {
+      addPlayerButton.classList.add("hidden");
+      playButton.classList.remove("hidden");
+      nicknameInput.classList.add("hidden");
+    }
   });
 
-  scoreButton.addEventListener("click", displayScores);
-  hideScoresBtn.addEventListener("click", hideScores);
+  playButton.addEventListener("click", () => {
+    console.log("Starting game for players...");
+    startNextPlayer();
+    hideUI();
+  });
 }
 
-function displayScores() {
-  const hideScoresBtn = document.getElementById("hide-score-button");
-  const scoreboard = document.getElementById("scoreboard");
-  scoreboard.classList.remove("hidden");
-  hideScoresBtn.classList.remove("hidden");
-}
-
-function hideUI() {
+export function hideUI() {
   const uiContainer = document.getElementById("ui-container");
-
   uiContainer.style.display = "none";
-}
-
-function hideScores() {
-  const scoreboard = document.getElementById("scoreboard");
-  const hideScoresBtn = document.getElementById("hide-score-button");
-
-  if (scoreboard.classList.contains("hidden")) return;
-
-  scoreboard.classList.add("hidden");
-  hideScoresBtn.classList.add("hidden");
 }

@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { scene, camera, renderer } from "./sceneSetup";
 import { keyboard } from "./keyboard";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { gameFinished } from "./main";
 
 const leftBoundary = -250;
 const rightBoundary = 250;
@@ -97,6 +98,7 @@ function animate() {
 
 function stopGame() {
   gameRunning = false;
+  gameFinished();
 }
 
 function onWindowResize() {
