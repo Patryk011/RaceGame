@@ -74,3 +74,15 @@ td {
   z-index: 10;
   /* display: none; */
 }
+
+#username-display {
+  color: white;
+  font-size: 40px;
+  font-family: sans-serif;
+  font-weight: bold;
+  z-index: 10;
+  margin: 0 auto;
+  position: absolute;
+  top: 5%;
+  left: 35%;
+}

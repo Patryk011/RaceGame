@@ -38,8 +38,18 @@ export function startNextPlayer() {
   }
 }
 
+export function nameDisplay(nickname) {
+  const name = document.getElementById("username-display");
+
+  name.textContent = `Starting game for ${nickname}`;
+
+  setTimeout(() => {
+    name.textContent = "";
+  }, 5000);
+}
+
 export function startGame(nickname) {
-  console.log(`Starting game for ${nickname}`);
+  nameDisplay(nickname);
   resetGameEnvironment();
   startGameControls();
   document.body.appendChild(renderer.domElement);

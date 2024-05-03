@@ -39,7 +39,6 @@ export function setupUI() {
   });
 
   playButton.addEventListener("click", () => {
-    console.log("Starting game for players...");
     startNextPlayer();
     hideUI();
   });
