@@ -33,8 +33,8 @@ export function setupUI() {
     nicknameInput.value = "";
     if (currentPlayerCount === totalPlayers) {
       addPlayerButton.classList.add("hidden");
-      playButton.classList.remove("hidden");
       nicknameInput.classList.add("hidden");
+      playButton.style.display = "block";
     }
   });
 

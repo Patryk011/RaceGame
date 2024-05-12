@@ -1,7 +1,8 @@
 import * as THREE from "three";
 import { scene, camera, renderer } from "./sceneSetup";
 import { keyboard } from "./keyboard";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { gameFinished } from "./main";
 
 const leftBoundary = -250;
@@ -11,25 +12,26 @@ const finishLineDistance = -17500;
 let gameRunning = true;
 let score = 0;
 
-const loader = new GLTFLoader();
-let car;
 
+let car;
 function loadCarModel() {
-  loader.load(
-    "assets/car/scene.gltf",
-    function (gltf) {
-      car = gltf.scene;
-      car.scale.set(45, 45, 45);
+  const mtlLoader = new MTLLoader();
+  mtlLoader.load('assets/car/Car_Obj.mtl', function (materials) {
+    materials.preload();
+
+    const objLoader = new OBJLoader();
+    objLoader.setMaterials(materials);
+    objLoader.load('assets/car/CarObj.obj', function (object) {
+      car = object;
+      car.scale.set(30, 30, 30);
       car.position.set(0, 7, 0);
-      car.rotation.y = 7.85;
+      car.rotation.y = 9.39;
 
       scene.add(car);
-    },
-    undefined,
-    function (error) {
-      console.error("An error happened while loading the car model:", error);
-    }
-  );
+    }, undefined, function (error) {
+      console.error('An error happened while loading the car model:', error);
+    });
+  });
 }
 
 export function updateScoreDisplay() {

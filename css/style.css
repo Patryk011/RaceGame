@@ -86,3 +86,7 @@ td {
   top: 5%;
   left: 35%;
 }
+
+#play-button {
+  display: none;
+}
