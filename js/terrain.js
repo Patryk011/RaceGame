@@ -46,26 +46,25 @@ function createTree(x, z) {
   resourceTracker.track(foliageMaterial);
 }
 
-export function createTerrain() {
-  for (let i = 0; i < numberOfTrees; i++) {
-    let x,
-      z = THREE.MathUtils.randFloatSpread(35000);
+for (let i = 0; i < numberOfTrees; i++) {
+  let x,
+    z = THREE.MathUtils.randFloatSpread(35000);
 
-    if (Math.random() < 0.5) {
-      x = THREE.MathUtils.randFloat(leftTreeZoneStart, leftTreeZoneEnd);
-    } else {
-      x = THREE.MathUtils.randFloat(rightTreeZoneStart, rightTreeZoneEnd);
-    }
-    createTree(x, z);
+  if (Math.random() < 0.5) {
+    x = THREE.MathUtils.randFloat(leftTreeZoneStart, leftTreeZoneEnd);
+  } else {
+    x = THREE.MathUtils.randFloat(rightTreeZoneStart, rightTreeZoneEnd);
   }
+  createTree(x, z);
+}
 
+export function createTerrain() {
   const loader = new THREE.TextureLoader();
   resourceTracker.track(loader);
 
   const asphaltTexture = loader.load("assets/textures/asphalt.jpg");
   asphaltTexture.wrapS = asphaltTexture.wrapT = THREE.RepeatWrapping;
   asphaltTexture.repeat.set(1, 20);
-  resourceTracker.track(asphaltTexture);
 
   const insideMaterial = new THREE.MeshBasicMaterial({ map: asphaltTexture });
 
@@ -85,7 +84,6 @@ export function createTerrain() {
   const grassTexture = loader.load("assets/textures/grass.jpg");
   grassTexture.wrapS = grassTexture.wrapT = THREE.RepeatWrapping;
   grassTexture.repeat.set(50, 50);
-  resourceTracker.track(grassTexture);
 
   const outsideMaterial = new THREE.MeshBasicMaterial({ map: grassTexture });
 
@@ -113,8 +111,4 @@ export function createTerrain() {
   scene.add(outsideRightGround);
   resourceTracker.track(outsideRightGround);
   resourceTracker.track(outsideRightGeometry);
-}
-
-export function disposeTerrain() {
-  resourceTracker.dispose();
 }
