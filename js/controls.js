@@ -1,36 +1,47 @@
 import * as THREE from "three";
 import { scene, camera, renderer } from "./sceneSetup";
 import { keyboard } from "./keyboard";
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
-import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
+import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
 import { gameFinished } from "./main";
+import { ResourceTracker } from "./resourceTracker";
+
+const resourceTracker = new ResourceTracker();
 
 const leftBoundary = -250;
 const rightBoundary = 250;
 const finishLineDistance = -17500;
-// const maxTiltAngle = THREE.MathUtils.degToRad(10);
 let gameRunning = true;
 let score = 0;
-
 
 let car;
 function loadCarModel() {
   const mtlLoader = new MTLLoader();
-  mtlLoader.load('assets/car/Car_Obj.mtl', function (materials) {
+  resourceTracker.track(mtlLoader);
+
+  mtlLoader.load("assets/car/Car_Obj.mtl", function (materials) {
     materials.preload();
 
     const objLoader = new OBJLoader();
     objLoader.setMaterials(materials);
-    objLoader.load('assets/car/CarObj.obj', function (object) {
-      car = object;
-      car.scale.set(30, 30, 30);
-      car.position.set(0, 7, 0);
-      car.rotation.y = 9.39;
+    resourceTracker.track(objLoader);
 
-      scene.add(car);
-    }, undefined, function (error) {
-      console.error('An error happened while loading the car model:', error);
-    });
+    objLoader.load(
+      "assets/car/CarObj.obj",
+      function (object) {
+        car = object;
+        car.scale.set(30, 30, 30);
+        car.position.set(0, 7, 0);
+        car.rotation.y = 9.39;
+
+        scene.add(car);
+        resourceTracker.track(car);
+      },
+      undefined,
+      function (error) {
+        console.error("An error happened while loading the car model:", error);
+      }
+    );
   });
 }
 
@@ -42,10 +53,12 @@ export function updateScoreDisplay() {
 loadCarModel();
 
 const clock = new THREE.Clock();
+resourceTracker.track(clock);
 
 export function setupControls() {
   addBoundaryStripes();
   addMiddleLines();
+  addFinishLine();
   animate();
 }
 
@@ -94,11 +107,11 @@ function updateMovement() {
     stopGame();
   }
 }
+
 function animate() {
   if (gameRunning) {
     requestAnimationFrame(animate);
     updateMovement();
-
     renderer.render(scene, camera);
   }
 }
@@ -125,7 +138,7 @@ function onWindowResize() {
 function addBoundaryStripes() {
   const segmentLength = 100;
   const stripeWidth = 35;
-  const totalLength = Math.abs(finishLineDistance);
+  const totalLength = Math.abs(finishLineDistance) * 1.5;
 
   function addStripesForSide(side) {
     let currentZ = 0;
@@ -136,6 +149,7 @@ function addBoundaryStripes() {
       whiteStripe.position.set(side, 0.1, -currentZ);
       whiteStripe.rotateX(-Math.PI / 2);
       scene.add(whiteStripe);
+      resourceTracker.track(whiteStripe);
 
       currentZ += segmentLength;
 
@@ -145,6 +159,7 @@ function addBoundaryStripes() {
       redStripe.position.set(side, 0.1, -currentZ);
       redStripe.rotateX(-Math.PI / 2);
       scene.add(redStripe);
+      resourceTracker.track(redStripe);
 
       currentZ += segmentLength;
     }
@@ -159,7 +174,7 @@ function addMiddleLines() {
   const gapLength = 30;
   const lineThickness = 4;
   const lineColor = 0xffffff;
-  const totalLength = Math.abs(finishLineDistance);
+  const totalLength = Math.abs(finishLineDistance) * 1.5;
 
   for (let z = 0; z < totalLength; z += dashLength + gapLength) {
     const dashGeometry = new THREE.PlaneGeometry(lineThickness, dashLength);
@@ -168,5 +183,19 @@ function addMiddleLines() {
     const dash = new THREE.Mesh(dashGeometry, dashMaterial);
     dash.position.set(0, 0.1, -z - dashLength / 2);
     scene.add(dash);
+    resourceTracker.track(dash);
   }
+}
+
+function addFinishLine() {
+  const finishLineGeometry = new THREE.PlaneGeometry(
+    rightBoundary - leftBoundary,
+    10
+  );
+  const finishLineMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+  const finishLine = new THREE.Mesh(finishLineGeometry, finishLineMaterial);
+  finishLine.position.set(0, 0.1, finishLineDistance);
+  finishLine.rotateX(-Math.PI / 2);
+  scene.add(finishLine);
+  resourceTracker.track(finishLine);
 }

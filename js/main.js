@@ -8,7 +8,9 @@ import {
   startGameControls,
 } from "./controls.js";
 import { setupUI } from "./ui.js";
+import { ResourceTracker } from "./resourceTracker";
 
+const resourceTracker = new ResourceTracker();
 export let players = [];
 let currentPlayerIndex = 0;
 
@@ -31,7 +33,6 @@ export function startNextPlayer() {
     !players[currentPlayerIndex].finished
   ) {
     const playerName = players[currentPlayerIndex].name;
-
     startGame(playerName);
   } else {
     console.log("All players have played or game queue is complete.");
@@ -40,15 +41,14 @@ export function startNextPlayer() {
 
 export function nameDisplay(nickname) {
   const name = document.getElementById("username-display");
-
   name.textContent = `Starting game for ${nickname}`;
-
   setTimeout(() => {
     name.textContent = "";
   }, 5000);
 }
 
 export function startGame(nickname) {
+  resourceTracker.dispose();
   nameDisplay(nickname);
   resetGameEnvironment();
   startGameControls();
@@ -67,6 +67,7 @@ function init() {
 export function gameFinished() {
   players[currentPlayerIndex].finished = true;
   updateScoreboard();
+  resourceTracker.dispose();
   currentPlayerIndex++;
   if (currentPlayerIndex < players.length) {
     startNextPlayer();
