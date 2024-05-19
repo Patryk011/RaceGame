@@ -15,6 +15,8 @@ let gameRunning = true;
 let score = 0;
 
 let car;
+let obstacles = [];
+
 function loadCarModel() {
   const mtlLoader = new MTLLoader();
   resourceTracker.track(mtlLoader);
@@ -34,6 +36,13 @@ function loadCarModel() {
         car.position.set(0, 7, 0);
         car.rotation.y = 9.39;
 
+        car.traverse(function (child) {
+          if (child instanceof THREE.Mesh) {
+            child.geometry.computeBoundingBox();
+            child.geometry.boundingBox.applyMatrix4(child.matrixWorld);
+          }
+        });
+
         scene.add(car);
         resourceTracker.track(car);
       },
@@ -44,7 +53,6 @@ function loadCarModel() {
     );
   });
 }
-
 export function updateScoreDisplay() {
   const scoreElement = document.getElementById("score-display");
   scoreElement.textContent = `Score: ${Math.round(score)}`;
@@ -59,6 +67,7 @@ export function setupControls() {
   addBoundaryStripes();
   addMiddleLines();
   addFinishLine();
+  addObstacles();
   animate();
 }
 
@@ -106,6 +115,8 @@ function updateMovement() {
   if (car.position.z <= finishLineDistance) {
     stopGame();
   }
+
+  checkCollisions();
 }
 
 function animate() {
@@ -198,4 +209,55 @@ function addFinishLine() {
   finishLine.rotateX(-Math.PI / 2);
   scene.add(finishLine);
   resourceTracker.track(finishLine);
+}
+
+function addObstacles() {
+  const obstacleGeometry = new THREE.BoxGeometry(20, 20, 20);
+  const obstacleMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+
+  for (let i = 0; i < 10; i++) {
+    const obstacle = new THREE.Mesh(obstacleGeometry, obstacleMaterial);
+    obstacle.position.set(
+      THREE.MathUtils.randFloat(leftBoundary, rightBoundary),
+      10,
+      -Math.random() * Math.abs(finishLineDistance)
+    );
+
+    obstacle.geometry.computeBoundingBox();
+
+    scene.add(obstacle);
+    obstacles.push(obstacle);
+    resourceTracker.track(obstacle);
+
+    const boxHelper = new THREE.BoxHelper(obstacle, 0xff0000);
+    scene.add(boxHelper);
+    resourceTracker.track(boxHelper);
+  }
+}
+
+// Check collisions
+function checkCollisions() {
+  if (!car) return;
+
+  const carBox = new THREE.Box3(
+    new THREE.Vector3(
+      car.position.x - 15,
+      car.position.y - 7,
+      car.position.z - 10
+    ),
+    new THREE.Vector3(
+      car.position.x + 15,
+      car.position.y + 7,
+      car.position.z + 10
+    )
+  );
+
+  for (let i = 0; i < obstacles.length; i++) {
+    const obstacleBox = new THREE.Box3().setFromObject(obstacles[i]);
+
+    if (carBox.intersectsBox(obstacleBox)) {
+      stopGame();
+      return;
+    }
+  }
 }
