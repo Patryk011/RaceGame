@@ -13,6 +13,8 @@ const rightBoundary = 250;
 const finishLineDistance = -17500;
 let gameRunning = true;
 let score = 0;
+let startTime = 0;
+let endTime = 0;
 
 let car;
 let obstacles = [];
@@ -73,6 +75,7 @@ export function setupControls() {
 
 export function startGameControls() {
   gameRunning = true;
+  startTime = performance.now(); // start timer
   animate();
 }
 
@@ -129,11 +132,19 @@ function animate() {
 
 function stopGame() {
   gameRunning = false;
-  gameFinished();
+  endTime = performance.now(); // stop timer
+  const timeTaken = ((endTime - startTime) / 1000).toFixed(2); // time in seconds
+  const finalScore = {
+    time: parseFloat(timeTaken),
+    distance: Math.round(score),
+  };
+  gameFinished(finalScore); // pass score to gameFinished
 }
 
 export function resetGameEnvironment() {
   score = 0;
+  startTime = 0;
+  endTime = 0;
   if (car) {
     car.position.set(0, 7, 0);
   }

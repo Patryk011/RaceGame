@@ -17,7 +17,7 @@ let currentPlayerIndex = 0;
 export function registerPlayer(nickname, totalPlayers) {
   const player = {
     name: nickname,
-    score: 0,
+    score: { time: 0, distance: 0 }, // initialize score as an object
     finished: false,
   };
   players.push(player);
@@ -62,9 +62,11 @@ export function startGame(nickname) {
 function init() {
   setupScene();
   setupUI();
+  setupEventListeners();
 }
 
-export function gameFinished() {
+export function gameFinished(finalScore) {
+  players[currentPlayerIndex].score = finalScore;
   players[currentPlayerIndex].finished = true;
   updateScoreboard();
   resourceTracker.dispose();
@@ -84,11 +86,67 @@ function animate() {
 
 function updateScoreboard() {
   const scoreboardElement = document.querySelector("#scoreboard table");
-  scoreboardElement.innerHTML = "<tr><th>Player</th><th>Score</th></tr>";
+  scoreboardElement.innerHTML =
+    "<tr><th>Player</th><th>Time (s)</th><th>Distance</th></tr>";
   players.forEach((player) => {
-    const row = `<tr><td>${player.name}</td><td>${player.score}</td></tr>`;
+    const row = `<tr><td>${player.name}</td><td>${player.score.time.toFixed(
+      2
+    )}</td><td>${player.score.distance}</td></tr>`;
     scoreboardElement.innerHTML += row;
   });
+}
+
+function displayScores() {
+  const scoreboard = document.getElementById("scoreboard");
+  scoreboard.classList.remove("hidden");
+  const uiContainer = document.getElementById("ui-container");
+  uiContainer.style.display = "none";
+  const gameContainer = document.getElementById("game-container");
+  gameContainer.style.display = "none"; // Hide game view
+  renderer.domElement.style.display = "none"; // Hide the renderer view
+}
+
+function setupEventListeners() {
+  const scoreButton = document.getElementById("score-button");
+  const hideScoreButton = document.getElementById("hide-score-button");
+  const resetGameButton = document.getElementById("reset-game-button");
+
+  if (scoreButton) {
+    scoreButton.addEventListener("click", () => {
+      displayScores();
+    });
+  }
+
+  if (hideScoreButton) {
+    hideScoreButton.addEventListener("click", () => {
+      const scoreboard = document.getElementById("scoreboard");
+      scoreboard.classList.add("hidden");
+      const uiContainer = document.getElementById("ui-container");
+      uiContainer.style.display = "block";
+      const gameContainer = document.getElementById("game-container");
+      gameContainer.style.display = "block"; // Show game view
+      renderer.domElement.style.display = "block"; // Show the renderer view
+    });
+  }
+
+  if (resetGameButton) {
+    resetGameButton.addEventListener("click", () => {
+      resetGame();
+    });
+  }
+}
+
+function resetGame() {
+  players = [];
+  currentPlayerIndex = 0;
+  resetGameEnvironment();
+  const scoreboard = document.getElementById("scoreboard");
+  scoreboard.classList.add("hidden");
+  const uiContainer = document.getElementById("ui-container");
+  uiContainer.style.display = "block";
+  const gameContainer = document.getElementById("game-container");
+  gameContainer.style.display = "block"; // Show game view
+  renderer.domElement.style.display = "block"; // Show the renderer view
 }
 
 init();
