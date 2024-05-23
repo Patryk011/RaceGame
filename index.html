@@ -24,14 +24,23 @@
           class="hidden"
         />
         <button id="add-player-button" class="hidden">Add Player</button>
-        <button id="play-button">Play</button>
+        <button id="play-button" class="hidden">Play</button>
         <button id="score-button">Scores</button>
-        <button id="reset-game-button">Reset Game</button>
+        <button id="reset-game-button" class="hidden">Reset Game</button>
       </div>
       <div id="scoreboard" class="hidden">
         <h2>Scoreboard:</h2>
-        <table></table>
-        <button id="hide-score-button">Hide Scores</button>
+        <table>
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th>Time (s)</th>
+              <th>Distance</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <button id="back-to-menu-button">Back to Menu</button>
       </div>
     </div>
     <script type="module" src="js/main.js"></script>

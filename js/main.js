@@ -17,7 +17,7 @@ let currentPlayerIndex = 0;
 export function registerPlayer(nickname, totalPlayers) {
   const player = {
     name: nickname,
-    score: { time: 0, distance: 0 }, // initialize score as an object
+    score: { time: 0, distance: 0 },
     finished: false,
   };
   players.push(player);
@@ -85,9 +85,8 @@ function animate() {
 }
 
 function updateScoreboard() {
-  const scoreboardElement = document.querySelector("#scoreboard table");
-  scoreboardElement.innerHTML =
-    "<tr><th>Player</th><th>Time (s)</th><th>Distance</th></tr>";
+  const scoreboardElement = document.querySelector("#scoreboard table tbody");
+  scoreboardElement.innerHTML = "";
   players.forEach((player) => {
     const row = `<tr><td>${player.name}</td><td>${player.score.time.toFixed(
       2
@@ -97,19 +96,57 @@ function updateScoreboard() {
 }
 
 function displayScores() {
+  console.log("displayScores function called");
+
+  updateScoreboard();
+
   const scoreboard = document.getElementById("scoreboard");
-  scoreboard.classList.remove("hidden");
+  if (scoreboard) {
+    scoreboard.classList.remove("hidden");
+    console.log("Scoreboard is now visible");
+  }
+
   const uiContainer = document.getElementById("ui-container");
-  uiContainer.style.display = "none";
+  if (uiContainer) {
+    uiContainer.style.display = "none";
+    console.log("UI Container is now hidden");
+  }
+
   const gameContainer = document.getElementById("game-container");
-  gameContainer.style.display = "none"; // Hide game view
-  renderer.domElement.style.display = "none"; // Hide the renderer view
+  if (gameContainer) {
+    gameContainer.style.display = "none";
+    console.log("Game Container is now hidden");
+  }
+
+  if (renderer.domElement) {
+    renderer.domElement.style.display = "none";
+    console.log("Renderer view is now hidden");
+  }
+
+  const scoreButton = document.getElementById("score-button");
+  if (scoreButton) {
+    scoreButton.style.display = "none";
+    console.log("Score button is now hidden");
+  }
+
+  const hideScoreButton = document.getElementById("hide-score-button");
+  if (hideScoreButton) {
+    hideScoreButton.style.display = "block";
+    console.log("Hide score button is now visible");
+  }
+
+  const backToMenuButton = document.getElementById("back-to-menu-button");
+  if (backToMenuButton) {
+    backToMenuButton.style.display = "block";
+    console.log("Back to menu button is now visible");
+  }
 }
 
 function setupEventListeners() {
   const scoreButton = document.getElementById("score-button");
   const hideScoreButton = document.getElementById("hide-score-button");
   const resetGameButton = document.getElementById("reset-game-button");
+  const backToMenuButton = document.getElementById("back-to-menu-button");
 
   if (scoreButton) {
     scoreButton.addEventListener("click", () => {
@@ -124,14 +161,36 @@ function setupEventListeners() {
       const uiContainer = document.getElementById("ui-container");
       uiContainer.style.display = "block";
       const gameContainer = document.getElementById("game-container");
-      gameContainer.style.display = "block"; // Show game view
-      renderer.domElement.style.display = "block"; // Show the renderer view
+      gameContainer.style.display = "block";
+      if (renderer.domElement) renderer.domElement.style.display = "block";
+
+      hideScoreButton.style.display = "none";
+      if (resetGameButton) resetGameButton.style.display = "none";
+      if (scoreButton) scoreButton.style.display = "block";
     });
   }
 
   if (resetGameButton) {
     resetGameButton.addEventListener("click", () => {
       resetGame();
+    });
+  }
+
+  if (backToMenuButton) {
+    backToMenuButton.addEventListener("click", () => {
+      const scoreboard = document.getElementById("scoreboard");
+      scoreboard.classList.add("hidden");
+      const uiContainer = document.getElementById("ui-container");
+      uiContainer.style.display = "block";
+      const scoreButton = document.getElementById("score-button");
+      if (scoreButton) scoreButton.style.display = "block";
+      const playButton = document.getElementById("play-button");
+      if (playButton) playButton.style.display = "block";
+      const resetGameButton = document.getElementById("reset-game-button");
+      if (resetGameButton) resetGameButton.style.display = "none";
+      const hideScoreButton = document.getElementById("hide-score-button");
+      if (hideScoreButton) hideScoreButton.style.display = "none";
+      backToMenuButton.style.display = "none";
     });
   }
 }
@@ -142,11 +201,23 @@ function resetGame() {
   resetGameEnvironment();
   const scoreboard = document.getElementById("scoreboard");
   scoreboard.classList.add("hidden");
+  const scoreElement = document.getElementById("score-display");
+  scoreElement.textContent = ``;
+
   const uiContainer = document.getElementById("ui-container");
   uiContainer.style.display = "block";
   const gameContainer = document.getElementById("game-container");
-  gameContainer.style.display = "block"; // Show game view
-  renderer.domElement.style.display = "block"; // Show the renderer view
+  gameContainer.style.display = "block";
+  if (renderer.domElement) renderer.domElement.style.display = "block";
+
+  const scoreButton = document.getElementById("score-button");
+  if (scoreButton) scoreButton.style.display = "block";
+
+  const hideScoreButton = document.getElementById("hide-score-button");
+  if (hideScoreButton) hideScoreButton.style.display = "none";
+
+  const resetGameButton = document.getElementById("reset-game-button");
+  if (resetGameButton) resetGameButton.style.display = "none";
 }
 
 init();
