@@ -24,6 +24,8 @@ export function registerPlayer(nickname, totalPlayers) {
   updateScoreboard();
   if (players.length === totalPlayers) {
     console.log("All players registered. Ready to start!");
+    const playButton = document.getElementById("play-button");
+    if (playButton) playButton.style.display = "block";
   }
 }
 
@@ -103,56 +105,36 @@ function displayScores() {
   const scoreboard = document.getElementById("scoreboard");
   if (scoreboard) {
     scoreboard.classList.remove("hidden");
-    console.log("Scoreboard is now visible");
-  } else {
-    console.log("Scoreboard element not found");
+    scoreboard.style.display = "flex";
   }
 
   const uiContainer = document.getElementById("ui-container");
   if (uiContainer) {
     uiContainer.style.display = "none";
     console.log("UI Container is now hidden");
-  } else {
-    console.log("UI Container element not found");
-  }
-
-  const gameContainer = document.getElementById("game-container");
-  if (gameContainer) {
-    gameContainer.style.display = "none";
-    console.log("Game Container is now hidden");
-  } else {
-    console.log("Game Container element not found");
   }
 
   if (renderer.domElement) {
     renderer.domElement.style.display = "none";
     console.log("Renderer view is now hidden");
-  } else {
-    console.log("Renderer element not found");
   }
 
   const scoreButton = document.getElementById("score-button");
   if (scoreButton) {
     scoreButton.style.display = "none";
     console.log("Score button is now hidden");
-  } else {
-    console.log("Score button element not found");
   }
 
   const hideScoreButton = document.getElementById("hide-score-button");
   if (hideScoreButton) {
     hideScoreButton.style.display = "block";
     console.log("Hide score button is now visible");
-  } else {
-    console.log("Hide score button element not found");
   }
 
   const backToMenuButton = document.getElementById("back-to-menu-button");
   if (backToMenuButton) {
     backToMenuButton.style.display = "block";
     console.log("Back to menu button is now visible");
-  } else {
-    console.log("Back to menu button element not found");
   }
 }
 
@@ -181,6 +163,7 @@ function setupEventListeners() {
       hideScoreButton.style.display = "none";
       if (resetGameButton) resetGameButton.style.display = "none";
       if (scoreButton) scoreButton.style.display = "block";
+      if (backToMenuButton) backToMenuButton.style.display = "none";
     });
   }
 
@@ -232,6 +215,9 @@ function resetGame() {
 
   const resetGameButton = document.getElementById("reset-game-button");
   if (resetGameButton) resetGameButton.style.display = "none";
+
+  const backToMenuButton = document.getElementById("back-to-menu-button");
+  if (backToMenuButton) backToMenuButton.style.display = "none";
 }
 
 init();
