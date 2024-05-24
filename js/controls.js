@@ -15,6 +15,7 @@ let gameRunning = true;
 let score = 0;
 let startTime = 0;
 let endTime = 0;
+let isStopped = false;
 
 let car;
 let obstacles = [];
@@ -89,21 +90,24 @@ function updateMovement() {
 
   car.position.z -= moveDistance;
 
-  score += moveDistance;
-
-  updateScoreDisplay();
-
   if (keyboard.pressed("arrowup") || keyboard.pressed("w")) {
     car.position.z -= moveDistance;
-  }
-  if (keyboard.pressed("arrowdown") || keyboard.pressed("s")) {
+    isStopped = false;
+  } else if (keyboard.pressed("arrowdown") || keyboard.pressed("s")) {
     car.position.z += moveDistance;
+    isStopped = true;
+  } else {
+    isStopped = false;
   }
 
   if (keyboard.pressed("arrowleft") || keyboard.pressed("a")) {
     car.position.x = Math.max(car.position.x - moveDistance, leftBoundary);
   } else if (keyboard.pressed("arrowright") || keyboard.pressed("d")) {
     car.position.x = Math.min(car.position.x + moveDistance, rightBoundary);
+  }
+
+  if (!isStopped) {
+    score += moveDistance;
   }
 
   camera.position.set(
@@ -118,6 +122,7 @@ function updateMovement() {
   if (car.position.z <= finishLineDistance) {
     stopGame();
   }
+  updateScoreDisplay();
 
   checkCollisions();
 }
