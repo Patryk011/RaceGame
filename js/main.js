@@ -176,13 +176,13 @@ function setupEventListeners() {
   if (backToMenuButton) {
     backToMenuButton.addEventListener("click", () => {
       const scoreboard = document.getElementById("scoreboard");
-      scoreboard.classList.add("hidden");
+      scoreboard.style.display = "none";
       const uiContainer = document.getElementById("ui-container");
       uiContainer.style.display = "block";
       const scoreButton = document.getElementById("score-button");
       if (scoreButton) scoreButton.style.display = "block";
-      const playButton = document.getElementById("play-button");
-      if (playButton) playButton.style.display = "block";
+      // const playButton = document.getElementById("play-button");
+      // if (playButton) playButton.style.display = "block";
       const resetGameButton = document.getElementById("reset-game-button");
       if (resetGameButton) resetGameButton.style.display = "none";
       const hideScoreButton = document.getElementById("hide-score-button");
