@@ -188,10 +188,10 @@ function setupEventListeners() {
       uiContainer.style.display = "block";
       const scoreButton = document.getElementById("score-button");
       if (scoreButton) scoreButton.style.display = "block";
-      // const playButton = document.getElementById("play-button");
-      // if (playButton) playButton.style.display = "block";
+      const playButton = document.getElementById("play-button");
+      if (playButton) playButton.style.display = "none";
       const resetGameButton = document.getElementById("reset-game-button");
-      if (resetGameButton) resetGameButton.style.display = "block";
+      if (resetGameButton) resetGameButton.style.display = "none";
       const hideScoreButton = document.getElementById("hide-score-button");
       if (hideScoreButton) hideScoreButton.style.display = "none";
       backToMenuButton.style.display = "none";
