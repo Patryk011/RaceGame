@@ -41,6 +41,11 @@ export function startNextPlayer() {
   }
 }
 
+export function resetPlayerList() {
+  players = [];
+  currentPlayerIndex = 0;
+}
+
 export function nameDisplay(nickname) {
   const name = document.getElementById("username-display");
   name.textContent = `Starting game for ${nickname}`;
@@ -55,6 +60,7 @@ export function startGame(nickname) {
   resetGameEnvironment();
   startGameControls();
   document.body.appendChild(renderer.domElement);
+
   createTerrain();
   setupLights();
   setupControls();
@@ -68,16 +74,19 @@ function init() {
 }
 
 export function gameFinished(finalScore) {
+  const scoreElement = document.getElementById("score-display");
   players[currentPlayerIndex].score = finalScore;
   players[currentPlayerIndex].finished = true;
   updateScoreboard();
   resourceTracker.dispose();
+  scoreElement.textContent = ``;
   currentPlayerIndex++;
   if (currentPlayerIndex < players.length) {
     startNextPlayer();
   } else {
     console.log("Game over. Displaying final scores.");
     displayScores();
+    renderer.domElement.style.display = "none";
   }
 }
 
@@ -87,6 +96,9 @@ function animate() {
 }
 
 function updateScoreboard() {
+  if (players.length === 0) return;
+  console.log("playeerwseresere");
+
   const scoreboardElement = document.querySelector("#scoreboard table tbody");
   scoreboardElement.innerHTML = "";
   players.forEach((player) => {
@@ -112,11 +124,6 @@ function displayScores() {
   if (uiContainer) {
     uiContainer.style.display = "none";
     console.log("UI Container is now hidden");
-  }
-
-  if (renderer.domElement) {
-    renderer.domElement.style.display = "none";
-    console.log("Renderer view is now hidden");
   }
 
   const scoreButton = document.getElementById("score-button");
@@ -184,7 +191,7 @@ function setupEventListeners() {
       // const playButton = document.getElementById("play-button");
       // if (playButton) playButton.style.display = "block";
       const resetGameButton = document.getElementById("reset-game-button");
-      if (resetGameButton) resetGameButton.style.display = "none";
+      if (resetGameButton) resetGameButton.style.display = "block";
       const hideScoreButton = document.getElementById("hide-score-button");
       if (hideScoreButton) hideScoreButton.style.display = "none";
       backToMenuButton.style.display = "none";
@@ -193,8 +200,7 @@ function setupEventListeners() {
 }
 
 function resetGame() {
-  players = [];
-  currentPlayerIndex = 0;
+  resetPlayerList();
   resetGameEnvironment();
   const scoreboard = document.getElementById("scoreboard");
   scoreboard.classList.add("hidden");
