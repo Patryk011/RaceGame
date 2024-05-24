@@ -70,7 +70,7 @@ export function createTerrain() {
 
   const insideGeometry = new THREE.PlaneGeometry(
     rightBoundary - leftBoundary,
-    35000
+    50000
   );
   insideGeometry.rotateX(-Math.PI / 2);
 
@@ -87,7 +87,7 @@ export function createTerrain() {
 
   const outsideMaterial = new THREE.MeshBasicMaterial({ map: grassTexture });
 
-  const outsideLeftGeometry = new THREE.PlaneGeometry(10000, 35000);
+  const outsideLeftGeometry = new THREE.PlaneGeometry(10000, 50000);
   outsideLeftGeometry.rotateX(-Math.PI / 2);
   const outsideLeftGround = new THREE.Mesh(
     outsideLeftGeometry,
@@ -100,7 +100,7 @@ export function createTerrain() {
   resourceTracker.track(outsideLeftGeometry);
   resourceTracker.track(outsideMaterial);
 
-  const outsideRightGeometry = new THREE.PlaneGeometry(10000, 35000);
+  const outsideRightGeometry = new THREE.PlaneGeometry(10000, 50000);
   outsideRightGeometry.rotateX(-Math.PI / 2);
   const outsideRightGround = new THREE.Mesh(
     outsideRightGeometry,
