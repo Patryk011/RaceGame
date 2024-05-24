@@ -102,3 +102,8 @@ td {
 #play-button {
   display: none;
 }
+
+.highlight {
+  background-color: #d4edda;
+  color: #155724;
+}

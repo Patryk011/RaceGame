@@ -97,14 +97,24 @@ function animate() {
 
 function updateScoreboard() {
   if (players.length === 0) return;
-  console.log("playeerwseresere");
 
   const scoreboardElement = document.querySelector("#scoreboard table tbody");
   scoreboardElement.innerHTML = "";
+
+  // Znajdź gracza z najwyższym wynikiem
+  let highestScoringPlayer = players.reduce((prev, current) => {
+    const prevScore = prev.score.time + prev.score.distance;
+    const currentScore = current.score.time + current.score.distance;
+    return currentScore > prevScore ? current : prev;
+  }, players[0]);
+
   players.forEach((player) => {
-    const row = `<tr><td>${player.name}</td><td>${player.score.time.toFixed(
-      2
-    )}</td><td>${player.score.distance}</td></tr>`;
+    const isHighest = player === highestScoringPlayer;
+    const row = `<tr class="${isHighest ? "highlight" : ""}"><td>${
+      player.name
+    }</td><td>${player.score.time.toFixed(2)}</td><td>${
+      player.score.distance
+    }</td></tr>`;
     scoreboardElement.innerHTML += row;
   });
 }
