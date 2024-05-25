@@ -76,7 +76,7 @@ export function setupControls() {
 
 export function startGameControls() {
   gameRunning = true;
-  startTime = performance.now(); // start timer
+  startTime = performance.now(); 
   animate();
 }
 
@@ -137,13 +137,13 @@ function animate() {
 
 function stopGame() {
   gameRunning = false;
-  endTime = performance.now(); // stop timer
-  const timeTaken = ((endTime - startTime) / 1000).toFixed(2); // time in seconds
+  endTime = performance.now(); 
+  const timeTaken = ((endTime - startTime) / 1000).toFixed(2); 
   const finalScore = {
     time: parseFloat(timeTaken),
     distance: Math.round(score),
   };
-  gameFinished(finalScore); // pass score to gameFinished
+  gameFinished(finalScore);  gameFinished
 }
 
 export function resetGameEnvironment() {

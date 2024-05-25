@@ -101,7 +101,7 @@ function updateScoreboard() {
   const scoreboardElement = document.querySelector("#scoreboard table tbody");
   scoreboardElement.innerHTML = "";
 
-  // Znajdź gracza z najwyższym wynikiem
+
   let highestScoringPlayer = players.reduce((prev, current) => {
     const prevScore = prev.score.time + prev.score.distance;
     const currentScore = current.score.time + current.score.distance;
