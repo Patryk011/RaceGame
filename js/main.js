@@ -30,6 +30,11 @@ export function registerPlayer(nickname, totalPlayers) {
 }
 
 export function startNextPlayer() {
+  if (players.every((player) => player.finished)) {
+    players.forEach((player) => (player.finished = false));
+    currentPlayerIndex = 0;
+  }
+
   if (
     currentPlayerIndex < players.length &&
     !players[currentPlayerIndex].finished
@@ -71,6 +76,12 @@ function init() {
   setupScene();
   setupUI();
   setupEventListeners();
+
+  const savedResults = localStorage.getItem("scoreboardResults");
+  if (savedResults) {
+    const results = JSON.parse(savedResults);
+    updateScoreboardWithResults(results);
+  }
 }
 
 export function gameFinished(finalScore) {
@@ -101,14 +112,49 @@ function updateScoreboard() {
   const scoreboardElement = document.querySelector("#scoreboard table tbody");
   scoreboardElement.innerHTML = "";
 
+  let existingResults = [];
+  const savedResults = localStorage.getItem("scoreboardResults");
+  if (savedResults) {
+    existingResults = JSON.parse(savedResults);
+  }
 
-  let highestScoringPlayer = players.reduce((prev, current) => {
+  const newResults = players.map((player) => ({
+    name: player.name,
+    score: player.score,
+    finished: player.finished,
+  }));
+  const allResults = existingResults.concat(newResults);
+
+  let highestScoringPlayer = allResults.reduce((prev, current) => {
     const prevScore = prev.score.time + prev.score.distance;
     const currentScore = current.score.time + current.score.distance;
     return currentScore > prevScore ? current : prev;
-  }, players[0]);
+  }, allResults[0]);
 
-  players.forEach((player) => {
+  allResults.forEach((player) => {
+    const isHighest = player === highestScoringPlayer;
+    const row = `<tr class="${isHighest ? "highlight" : ""}"><td>${
+      player.name
+    }</td><td>${player.score.time.toFixed(2)}</td><td>${
+      player.score.distance
+    }</td></tr>`;
+    scoreboardElement.innerHTML += row;
+  });
+
+  localStorage.setItem("scoreboardResults", JSON.stringify(allResults));
+}
+
+function updateScoreboardWithResults(results) {
+  const scoreboardElement = document.querySelector("#scoreboard table tbody");
+  scoreboardElement.innerHTML = "";
+
+  let highestScoringPlayer = results.reduce((prev, current) => {
+    const prevScore = prev.score.time + prev.score.distance;
+    const currentScore = current.score.time + current.score.distance;
+    return currentScore > prevScore ? current : prev;
+  }, results[0]);
+
+  results.forEach((player) => {
     const isHighest = player === highestScoringPlayer;
     const row = `<tr class="${isHighest ? "highlight" : ""}"><td>${
       player.name
@@ -212,8 +258,10 @@ function setupEventListeners() {
 function resetGame() {
   resetPlayerList();
   resetGameEnvironment();
-  const scoreboard = document.getElementById("scoreboard");
-  scoreboard.classList.add("hidden");
+
+  const scoreboardElement = document.querySelector("#scoreboard table tbody");
+  scoreboardElement.innerHTML = "";
+
   const scoreElement = document.getElementById("score-display");
   scoreElement.textContent = ``;
 
@@ -234,6 +282,12 @@ function resetGame() {
 
   const backToMenuButton = document.getElementById("back-to-menu-button");
   if (backToMenuButton) backToMenuButton.style.display = "none";
+
+  const savedResults = localStorage.getItem("scoreboardResults");
+  if (savedResults) {
+    const results = JSON.parse(savedResults);
+    updateScoreboardWithResults(results);
+  }
 }
 
 init();
