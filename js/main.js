@@ -30,11 +30,6 @@ export function registerPlayer(nickname, totalPlayers) {
 }
 
 export function startNextPlayer() {
-  if (players.every((player) => player.finished)) {
-    players.forEach((player) => (player.finished = false));
-    currentPlayerIndex = 0;
-  }
-
   if (
     currentPlayerIndex < players.length &&
     !players[currentPlayerIndex].finished
@@ -88,7 +83,11 @@ export function gameFinished(finalScore) {
   const scoreElement = document.getElementById("score-display");
   players[currentPlayerIndex].score = finalScore;
   players[currentPlayerIndex].finished = true;
-  updateScoreboard();
+
+  if (finalScore.time > 0 || finalScore.distance > 0) {
+    updateScoreboard();
+  }
+
   resourceTracker.dispose();
   scoreElement.textContent = ``;
   currentPlayerIndex++;
@@ -118,20 +117,38 @@ function updateScoreboard() {
     existingResults = JSON.parse(savedResults);
   }
 
-  const newResults = players.map((player) => ({
+  const validResults = players.filter(
+    (player) => player.score.time > 0 || player.score.distance > 0
+  );
+
+  const newResults = validResults.map((player) => ({
     name: player.name,
     score: player.score,
     finished: player.finished,
   }));
-  const allResults = existingResults.concat(newResults);
+  const allResults = [...existingResults, ...newResults];
 
-  let highestScoringPlayer = allResults.reduce((prev, current) => {
+  const highestScoresMap = new Map();
+  allResults.forEach((player) => {
+    const existingPlayer = highestScoresMap.get(player.name);
+    if (
+      !existingPlayer ||
+      player.score.time + player.score.distance >
+        existingPlayer.score.time + existingPlayer.score.distance
+    ) {
+      highestScoresMap.set(player.name, player);
+    }
+  });
+
+  const highestScores = Array.from(highestScoresMap.values());
+
+  let highestScoringPlayer = highestScores.reduce((prev, current) => {
     const prevScore = prev.score.time + prev.score.distance;
     const currentScore = current.score.time + current.score.distance;
     return currentScore > prevScore ? current : prev;
-  }, allResults[0]);
+  }, highestScores[0]);
 
-  allResults.forEach((player) => {
+  highestScores.forEach((player) => {
     const isHighest = player === highestScoringPlayer;
     const row = `<tr class="${isHighest ? "highlight" : ""}"><td>${
       player.name
@@ -141,7 +158,7 @@ function updateScoreboard() {
     scoreboardElement.innerHTML += row;
   });
 
-  localStorage.setItem("scoreboardResults", JSON.stringify(allResults));
+  localStorage.setItem("scoreboardResults", JSON.stringify(highestScores));
 }
 
 function updateScoreboardWithResults(results) {
