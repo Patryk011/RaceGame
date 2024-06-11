@@ -1,8 +1,7 @@
 import * as THREE from "three";
 import { scene, camera, renderer } from "./sceneSetup";
 import { keyboard } from "./keyboard";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
-import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { gameFinished } from "./main";
 import { ResourceTracker } from "./resourceTracker";
 
@@ -19,44 +18,40 @@ let isStopped = false;
 
 let car;
 let obstacles = [];
+let swayAngle = 0;
+const swaySpeed = 2;
+const maxSwayAngle = 0.05;
 
 function loadCarModel() {
-  const mtlLoader = new MTLLoader();
-  resourceTracker.track(mtlLoader);
+  const gltfLoader = new GLTFLoader();
+  resourceTracker.track(gltfLoader);
 
-  mtlLoader.load("assets/car/Car_Obj.mtl", function (materials) {
-    materials.preload();
+  gltfLoader.load(
+    "assets/car/scene.gltf",
+    function (gltf) {
+      car = gltf.scene;
+      car.scale.set(30, 30, 30);
+      car.position.set(0, 15, 0);
+      car.rotation.y = 9.39;
 
-    const objLoader = new OBJLoader();
-    objLoader.setMaterials(materials);
-    resourceTracker.track(objLoader);
+      car.traverse(function (child) {
+        if (child instanceof THREE.Mesh) {
+          child.geometry.computeBoundingBox();
+          child.geometry.boundingBox.applyMatrix4(child.matrixWorld);
+        }
+      });
 
-    objLoader.load(
-      "assets/car/CarObj.obj",
-      function (object) {
-        car = object;
-        car.scale.set(30, 30, 30);
-        car.position.set(0, 7, 0);
-        car.rotation.y = 9.39;
-
-        car.traverse(function (child) {
-          if (child instanceof THREE.Mesh) {
-            child.geometry.computeBoundingBox();
-            child.geometry.boundingBox.applyMatrix4(child.matrixWorld);
-          }
-        });
-
-        scene.add(car);
-        resourceTracker.track(car);
-      },
-      undefined,
-      function (error) {
-        console.error("An error happened while loading the car model:", error);
-      }
-    );
-  });
+      scene.add(car);
+      resourceTracker.track(car);
+    },
+    undefined,
+    function (error) {
+      console.error("An error happened while loading the car model:", error);
+    }
+  );
 }
-export function updateScoreDisplay() {
+
+function updateScoreDisplay() {
   const scoreElement = document.getElementById("score-display");
   scoreElement.textContent = `Score: ${Math.round(score)}`;
 }
@@ -76,19 +71,19 @@ export function setupControls() {
 
 export function startGameControls() {
   gameRunning = true;
-  startTime = performance.now(); 
+  startTime = performance.now();
   animate();
 }
 
 function updateMovement() {
   if (!car) return;
 
-  const targetRotationY = Math.PI;
-
   const delta = clock.getDelta();
   const moveDistance = 200 * delta;
 
   car.position.z -= moveDistance;
+
+  let swaying = false;
 
   if (keyboard.pressed("arrowup") || keyboard.pressed("w")) {
     car.position.z -= moveDistance;
@@ -102,9 +97,23 @@ function updateMovement() {
 
   if (keyboard.pressed("arrowleft") || keyboard.pressed("a")) {
     car.position.x = Math.max(car.position.x - moveDistance, leftBoundary);
+    swayAngle = Math.max(swayAngle - delta * swaySpeed, -maxSwayAngle);
+    swaying = true;
   } else if (keyboard.pressed("arrowright") || keyboard.pressed("d")) {
     car.position.x = Math.min(car.position.x + moveDistance, rightBoundary);
+    swayAngle = Math.min(swayAngle + delta * swaySpeed, maxSwayAngle);
+    swaying = true;
   }
+
+  if (!swaying) {
+    if (swayAngle > 0) {
+      swayAngle = Math.max(swayAngle - delta * swaySpeed, 0);
+    } else {
+      swayAngle = Math.min(swayAngle + delta * swaySpeed, 0);
+    }
+  }
+
+  car.rotation.z = swayAngle;
 
   if (!isStopped) {
     score += moveDistance;
@@ -137,13 +146,14 @@ function animate() {
 
 function stopGame() {
   gameRunning = false;
-  endTime = performance.now(); 
-  const timeTaken = ((endTime - startTime) / 1000).toFixed(2); 
+  endTime = performance.now();
+  const timeTaken = ((endTime - startTime) / 1000).toFixed(2);
   const finalScore = {
     time: parseFloat(timeTaken),
     distance: Math.round(score),
   };
-  gameFinished(finalScore);  gameFinished
+  gameFinished(finalScore);
+  gameFinished;
 }
 
 export function resetGameEnvironment() {
@@ -151,7 +161,7 @@ export function resetGameEnvironment() {
   startTime = 0;
   endTime = 0;
   if (car) {
-    car.position.set(0, 7, 0);
+    car.position.set(0, 15, 0);
   }
   updateScoreDisplay();
 }
