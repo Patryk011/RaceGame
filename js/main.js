@@ -223,6 +223,9 @@ function setupEventListeners() {
   const hideScoreButton = document.getElementById("hide-score-button");
   const resetGameButton = document.getElementById("reset-game-button");
   const backToMenuButton = document.getElementById("back-to-menu-button");
+  const clearScoreboardButton = document.getElementById(
+    "clear-scoreboard-button"
+  );
 
   if (scoreButton) {
     scoreButton.addEventListener("click", () => {
@@ -268,6 +271,13 @@ function setupEventListeners() {
       const hideScoreButton = document.getElementById("hide-score-button");
       if (hideScoreButton) hideScoreButton.style.display = "none";
       backToMenuButton.style.display = "none";
+    });
+  }
+
+  if (clearScoreboardButton) {
+    clearScoreboardButton.addEventListener("click", () => {
+      localStorage.removeItem("scoreboardResults");
+      updateScoreboardWithResults([]);
     });
   }
 }
