@@ -261,7 +261,6 @@ function addObstacles() {
   }
 }
 
-// Check collisions
 function checkCollisions() {
   if (!car) return;
 
